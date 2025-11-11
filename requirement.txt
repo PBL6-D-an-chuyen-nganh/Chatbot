@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+google-generativeai
+sentence-transformers
+faiss-cpu
+numpy
+requests
+pydantic>=1.10
