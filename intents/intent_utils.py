@@ -23,7 +23,7 @@ def find_doctor_by_name(name, doctors, model):
 def get_available_slots(doctor_id, slots_api):
     try:
         url = slots_api.replace("{id}", str(doctor_id))
-        resp = requests.get(url, timeout=5)
+        resp = requests.get(url, timeout=3000)
         resp.raise_for_status()
         slots_data = resp.json()
         if not isinstance(slots_data, dict) or not slots_data:
