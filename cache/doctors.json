@@ -1,32 +1,32 @@
 [
   {
-    "userId": 31,
+    "userId": 1,
     "name": "Triệu Triệu Dương",
     "email": "duong.trieu@example.com",
     "phoneNumber": "0905123456",
     "role": null,
     "authStatus": null,
-    "position": "Bác sĩ điều trị",
+    "position": "Phó khoa Khám da",
     "degree": "TS",
     "introduction": "PGS.TS. Triệu Triều Dương hiện là Trưởng khoa Khoa Khám Bệnh, được biết đến là một chuyên gia đầu ngành trong lĩnh vực chẩn đoán và điều trị các bệnh lý da liễu phức tạp. Sau khi tốt nghiệp, PGS. Dương đã liên tục tham gia các khóa tu nghiệp tại Pháp và Úc, chuyên sâu về các kỹ thuật chẩn đoán hình ảnh và phát hiện sớm ung thư da. Với vai trò đầu tàu, bác sĩ không chỉ chịu trách nhiệm quản lý mà còn trực tiếp hội chẩn các ca bệnh khó, định hướng chuyên môn cho toàn khoa.",
     "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2010/01/pgs-trieu-trieu-duong.png",
     "achievements": "Hơn 10 năm kinh nghiệm trong điều trị các bệnh lý da liễu phức tạp. Đã tham gia nhiều hội thảo quốc tế về chăm sóc và tái tạo da."
   },
   {
-    "userId": 32,
+    "userId": 2,
     "name": "Nguyễn Bá My Nhi",
     "email": "nhi.my@example.com",
     "phoneNumber": "0905123457",
     "role": null,
     "authStatus": null,
-    "position": "Bác sĩ tư vấn",
+    "position": "Bác sĩ chuyên khoa",
     "degree": "BS",
     "introduction": "Bác sĩ Nguyễn Bá My Nhi là một Bác sĩ Nội tận tâm và đầy nhiệt huyết của bệnh viện. Đang trong chương trình đào tạo chuyên sâu, bác sĩ Nhi tích cực tham gia vào công tác điều trị, nghiên cứu khoa học và luôn thể hiện tinh thần ham học hỏi.",
     "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2021/03/bs-nguyen-ba-my-nhi.png",
     "achievements": "Tác giả của 3 công trình nghiên cứu về liệu pháp laser trong điều trị sẹo mụn. Giảng viên thỉnh giảng tại Trường Đại học Y Hà Nội."
   },
   {
-    "userId": 33,
+    "userId": 3,
     "name": "Vũ Trường Khanh",
     "email": "khanh.vutruong@example.com",
     "phoneNumber": "0905123458",
@@ -39,7 +39,7 @@
     "achievements": "Trưởng khoa Da liễu tại Bệnh viện Trung ương Huế. Được trao giải “Bác sĩ tiêu biểu vì làn da khỏe mạnh” năm 2022."
   },
   {
-    "userId": 34,
+    "userId": 4,
     "name": "Cẩm Ngọc Phượng",
     "email": "phuong.camngoc@example.com",
     "phoneNumber": "0905123459",
@@ -52,20 +52,20 @@
     "achievements": "Chuyên gia hàng đầu trong lĩnh vực điều trị nám và tàn nhang bằng công nghệ IPL. Thực hiện hơn 5000 ca điều trị thành công."
   },
   {
-    "userId": 35,
+    "userId": 5,
     "name": "Nguyễn Văn An",
     "email": "an.nguyen@example.com",
     "phoneNumber": "0905123460",
     "role": null,
     "authStatus": null,
-    "position": "Bác sĩ tư vấn",
+    "position": "Bác sĩ chuyên khoa",
     "degree": "ThS",
     "introduction": "Thạc sỹ Nguyễn Văn An là Bác sĩ tư vấn chuyên sâu tại bệnh viện, giữ vai trò quan trọng trong việc lắng nghe, thấu hiểu và định hướng kế hoạch chăm sóc sức khỏe da toàn diện cho từng bệnh nhân.Chuyên môn của bác sĩ là xây dựng các liệu trình chăm sóc da cá nhân hóa, tư vấn về dược mỹ phẩm phù hợp, và kết hợp các phương pháp điều trị không xâm lấn để giải quyết các vấn đề như mụn, lão hóa, và da nhạy cảm. Bác sĩ là cầu nối tin cậy giữa bệnh nhân và các chuyên khoa sâu hơn như Laser hay Phẫu thuật, đảm bảo mọi người đều nhận được sự chăm sóc đúng đắn và phù hợp nhất.",
     "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2011/01/bs-vu-truong-khanh.png",
     "achievements": "Đã có hơn 15 năm nghiên cứu về da liễu học thẩm mỹ. Đồng tác giả cuốn “Cẩm nang chăm sóc da dành cho người Việt”."
   },
   {
-    "userId": 36,
+    "userId": 6,
     "name": "Trần Phan Chung Thùy",
     "email": "thuy.chungphan@example.com",
     "phoneNumber": "0905123461",
@@ -78,7 +78,7 @@
     "achievements": "Tham gia chương trình hợp tác y tế Việt – Nhật về liệu pháp tế bào gốc trong tái tạo da. Giảng dạy tại nhiều khóa đào tạo chuyên sâu cho bác sĩ trẻ."
   },
   {
-    "userId": 37,
+    "userId": 7,
     "name": "Vũ Huy Trụ",
     "email": "tru.vuhuy@example.com",
     "phoneNumber": "0905123462",
@@ -91,20 +91,20 @@
     "achievements": "Chuyên gia tư vấn da liễu cho các thương hiệu mỹ phẩm uy tín. Nghiên cứu chính trong đề tài “Ảnh hưởng của môi trường đô thị đến sức khỏe làn da”."
   },
   {
-    "userId": 38,
+    "userId": 8,
     "name": "Trần Thị Thúy Hằng",
     "email": "hang.tranthi@example.com",
     "phoneNumber": "0905123463",
     "role": null,
     "authStatus": null,
-    "position": "Bác sĩ tư vấn",
+    "position": "Bác sĩ chuyên khoa",
     "degree": "BS",
-    "introduction": "Bác sĩ Trần Thị Thuý Hằng là một Bác sĩ Nội trú của bệnh viện, đại diện cho thế hệ bác sĩ trẻ tài năng, đầy nhiệt huyết và có nền tảng kiến thức y khoa xuất sắc.Chương trình Bác sĩ Nội trú là chương trình đào tạo sau đại học chuyên sâu và cạnh tranh nhất, chỉ dành cho những bác sĩ trẻ tốt nghiệp loại ưu. Trong quá trình này, bác sĩ Hằng được rèn luyện tay nghề một cách toàn diện, làm việc trực tiếp dưới sự hướng dẫn của các giáo sư, tiến sĩ, chuyên gia đầu ngành và tham gia vào các hoạt động lâm sàng chuyên sâu nhất. ",
+    "introduction": "Bác sĩ Trần Thị Thuý Hằng là một Bác sĩ Nội trú của bệnh viện, đại diện cho thế hệ bác sĩ trẻ tài năng, đầy nhiệt huyết và có nền tảng kiến thức y khoa xuất sắc.Chương trình Bác sĩ Nội trú là chương trình đào tạo sau đại học chuyên sâu và cạnh tranh nhất, chỉ dành cho những bác sĩ trẻ tốt nghiệp loại ưu. Trong quá trình này, bác sĩ Hằng được rèn luyện tay nghề một cách toàn diện, làm việc trực tiếp dưới sự hướng dẫn của các giáo sư, tiến sĩ, chuyên gia đầu ngành và tham gia vào các hoạt động lâm sàng chuyên sâu nhất.",
     "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2011/01/bs-tran-thi-thuy-hang.png",
     "achievements": "Hơn 20 năm công tác trong lĩnh vực da liễu. Từng được Bộ Y tế trao tặng bằng khen vì đóng góp trong nghiên cứu điều trị viêm da cơ địa."
   },
   {
-    "userId": 39,
+    "userId": 9,
     "name": "Ngô Quý Châu",
     "email": "chau.ngoquy@example.com",
     "phoneNumber": "0905123464",
@@ -117,7 +117,7 @@
     "achievements": "Thực hiện hơn 200 ca phẫu thuật thẩm mỹ da liễu. Từng là diễn giả tại Hội nghị Da liễu Đông Nam Á năm 2023."
   },
   {
-    "userId": 40,
+    "userId": 10,
     "name": "Lê Thị Mai",
     "email": "mai.lethi@example.com",
     "phoneNumber": "0905123465",
@@ -125,7 +125,7 @@
     "authStatus": null,
     "position": "Trưởng khoa Khám da",
     "degree": "PGS",
-    "introduction": "Phó Giáo sư, Tiến sĩ Lê Thị Mai là Trưởng khoa Điều trị tổng hợp, một trong những chuyên gia đầu ngành và là người thầy đáng kính trong lĩnh vực Da liễu tại Việt Nam.Với học vị Phó Giáo sư - Tiến sĩ, bác sĩ Lê Thị Mai không chỉ là một nhà lâm sàng xuất sắc mà còn là một nhà khoa học tâm huyết. Bác sĩ là tác giả của nhiều công trình nghiên cứu khoa học giá trị được đăng trên các tạp chí y khoa uy tín trong và ngoài nước, góp phần quan trọng vào sự phát triển của chuyên ngành. Bà cũng dành nhiều thời gian cho công tác giảng dạy, hướng dẫn các thế hệ bác sĩ, thạc sĩ và nghiên cứu sinh.",
+    "introduction": "Phó Giáo sư, Tiến sĩ Lê Thị Mai là Trưởng khoa Điều trị tổng hợp, một trong những chuyên gia đầu ngành và là người thầy đáng kính trong lĩnh vực Da liễu tại Việt Nam.Với học vị Phó Giáo sư - Tiến sĩ, bác sĩ Lê Thị Mai không chỉ là một nhà lâm sàng xuất sắc mà còn là một nhà khoa học tâm huyết. Bác sĩ là tác giả của nhiều công trình nghiên cứu khoa học giá trị được đăng trên các tạp chí y khoa uy tín trong và ngoài nước, góp phần quan trọng vào sự phát quen của chuyên ngành. Bà cũng dành nhiều thời gian cho công tác giảng dạy, hướng dẫn các thế hệ bác sĩ, thạc sĩ và nghiên cứu sinh.",
     "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2021/10/avt-bac-si-giao-su-ngo-quy-chau.png",
     "achievements": "Tác giả nhiều bài báo khoa học về điều trị mụn trứng cá ở thanh thiếu niên. Được bệnh nhân đánh giá cao về thái độ tận tâm và chuyên nghiệp."
   }
