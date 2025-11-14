@@ -1,102 +1,102 @@
 [
   {
-    "articleID": 57,
-    "title": "Tổn thương mạch máu (Vascular Lesions)",
-    "cause": "Bất thường mạch máu (u máu, giãn mao mạch, dị dạng mạch)",
-    "symptoms": "Vết đỏ, tím hoặc xanh trên da, có thể phẳng hoặc nổi gồ. Thường không đau, có thể chảy máu nếu va chạm mạnh",
-    "treatment": "Điều trị laser, tiêm xơ hoặc phẫu thuật tùy loại tổn thương.",
-    "prevention": "Tránh va chạm, kiểm tra định kỳ nếu kích thước tăng nhanh.",
+    "articleID": 67,
+    "title": "U xơ da (DF - Dermatofibroma)",
+    "cause": "Nguyên nhân chính xác không rõ, nhưng thường xuất hiện sau một chấn thương nhỏ trên da như côn trùng cắn, vết xước hoặc lông mọc ngược.",
+    "symptoms": "Nốt sần nhỏ, cứng, màu nâu, hồng hoặc đỏ, thường ở cẳng chân. Khi véo nhẹ vào hai bên, nốt sần có xu hướng lõm xuống (dấu hiệu \"lúm đồng tiền\").",
+    "treatment": "Lành tính và thường không cần điều trị. Có thể phẫu thuật cắt bỏ nếu gây ngứa, đau hoặc vì lý do thẩm mỹ.",
+    "prevention": "Không có cách phòng ngừa cụ thể do nguyên nhân không rõ ràng.",
     "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
+    "createdAt": "2025-11-14T13:24:15"
+  },
+  {
+    "articleID": 70,
+    "title": "Tổn thương mạch máu (VASC - Vascular Lesions)",
+    "cause": "Do sự tăng sinh hoặc giãn nở bất thường của các mạch máu dưới da. Có thể là bẩm sinh (ví dụ: bớt rượu vang) hoặc mắc phải (ví dụ: u máu anh đào).",
+    "symptoms": "Các đốm, mảng hoặc khối u màu đỏ, hồng, hoặc tím trên da. Ví dụ: u máu anh đào (chấm đỏ nhỏ), bớt rượu vang (mảng phẳng màu hồng/tím).",
+    "treatment": "Tùy thuộc vào loại. Thường không cần thiết. Các phương pháp điều trị bao gồm laser (đặc biệt là PDL), áp lạnh, đốt điện, hoặc phẫu thuật.",
+    "prevention": "Không có cách phòng ngừa cụ thể cho hầu hết các loại tổn thương mạch máu bẩm sinh. Hạn chế tiếp xúc nắng có thể giúp giảm u máu anh đào.",
+    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
+    "createdAt": "2025-11-14T13:24:15"
+  },
+  {
+    "articleID": 68,
+    "title": "Ung thư hắc tố (MEL - Melanoma)",
+    "cause": "Tiếp xúc với tia UV (ánh nắng mặt trời, giường tắm nắng) là yếu tố nguy cơ chính. Tiền sử gia đình, da sáng màu, nhiều nốt ruồi.",
+    "symptoms": "Một nốt ruồi mới, hoặc một nốt ruồi cũ thay đổi kích thước, hình dạng, màu sắc. Có thể ngứa, chảy máu, hoặc không lành.",
+    "treatment": "Phẫu thuật cắt bỏ rộng. Tùy thuộc vào giai đoạn, có thể kết hợp liệu pháp miễn dịch, liệu pháp nhắm trúng đích, hóa trị hoặc xạ trị.",
+    "prevention": "Quy tắc ABCDE: Nốt ruồi Bất đối xứng (Asymmetry), Viền không đều (Border), Màu sắc không đồng nhất (Color), Đường kính > 6mm (Diameter), Tiến triển (Evolving).",
+    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
+    "createdAt": "2025-11-14T13:24:15"
+  },
+  {
+    "articleID": 66,
+    "title": "Dày sừng tiết bã (BKL - Benign Keratosis)",
+    "cause": "Nguyên nhân không rõ ràng, thường liên quan đến lão hóa da và yếu tố di truyền. Không phải do virus và không lây nhiễm.",
+    "symptoms": "Tổn thương sáp, nổi gồ trên da, màu nâu, đen hoặc rám nắng, bề mặt sần sùi, trông như \"dán\" vào da. Lành tính.",
+    "treatment": "Thường không cần điều trị. Có thể loại bỏ vì lý do thẩm mỹ hoặc nếu bị kích ứng (áp lạnh, đốt điện, nạo, laser).",
+    "prevention": "Không có cách phòng ngừa cụ thể do chủ yếu liên quan đến di truyền và quá trình lão hóa tự nhiên của da.",
+    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
+    "createdAt": "2025-11-14T13:24:15"
+  },
+  {
+    "articleID": 69,
+    "title": "Nốt ruồi (NV - Melanocytic Nevus)",
+    "cause": "Sự phát triển cụm của các tế bào hắc tố (melanocytes). Thường do di truyền và có thể bị ảnh hưởng bởi tiếp xúc với ánh nắng (đặc biệt là ở thời thơ ấu).",
+    "symptoms": "Đốm hoặc nốt sần màu nâu, đen hoặc hồng, phẳng hoặc nổi gồ. Thường đối xứng, viền rõ, màu đồng nhất. Lành tính.",
+    "treatment": "Thường không cần điều trị. Chỉ loại bỏ (phẫu thuật) nếu có dấu hiệu nghi ngờ ung thư (thay đổi theo quy tắc ABCDE) hoặc vì lý do thẩm mỹ.",
+    "prevention": "Hạn chế tiếp xúc với ánh nắng mặt trời, đặc biệt là tránh cháy nắng, có thể làm giảm số lượng nốt ruồi mới.",
+    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
+    "createdAt": "2025-11-14T13:24:15"
+  },
+  {
+    "articleID": 65,
+    "title": "Ung thư biểu mô tế bào đáy (BCC - Basal Cell Carcinoma)",
+    "cause": "Chủ yếu do tiếp xúc với tia UV từ ánh nắng mặt trời. Nguy cơ cao ở người da sáng màu, có tiền sử cháy nắng.",
+    "symptoms": "Vết sưng bóng, mờ, màu da hoặc hồng, có thể lõm ở giữa, dễ chảy máu, không lành, hoặc mảng phẳng có vảy đỏ.",
+    "treatment": "Phẫu thuật (cắt bỏ, phẫu thuật Mohs), nạo và đốt điện, áp lạnh, kem bôi (Imiquimod), xạ trị (cho các trường hợp phức tạp).",
+    "prevention": "Tránh nắng, sử dụng kem chống nắng, che chắn da, kiểm tra da định kỳ, không sử dụng giường tắm nắng.",
+    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%AÁm-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
+    "createdAt": "2025-11-14T13:24:15"
+  },
+  {
+    "articleID": 64,
+    "title": "Dày sừng quang hóa (AKIEC - Actinic Keratosis)",
+    "cause": "Tiếp xúc lâu dài và lặp lại với tia cực tím (UV) từ ánh nắng mặt trời hoặc giường tắm nắng.",
+    "symptoms": "Vùng da sần sùi, khô, có vảy, màu hồng, đỏ hoặc nâu. Thường xuất hiện ở vùng da tiếp xúc nhiều với nắng (mặt, tai, da đầu hói, tay).",
+    "treatment": "Áp lạnh (nitơ lỏng), kem bôi (ví dụ: 5-Fluorouracil, Imiquimod), liệu pháp quang động (PDT), lột da bằng hóa chất.",
+    "prevention": "Sử dụng kem chống nắng phổ rộng (SPF 30+), đội mũ, mặc quần áo che chắn, tránh nắng gắt (10h-16h).",
+    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
+    "createdAt": "2025-11-14T13:24:15"
   },
   {
     "articleID": 2,
-    "title": "Viêm da cơ địa (Chàm)",
-    "cause": "Yếu tố di truyền, dị ứng (mạt bụi, lông vật nuôi), môi trường khô, thay đổi thời tiết",
-    "symptoms": "Da khô, ngứa, mẩn đỏ, có thể chảy dịch hoặc đóng vảy. Da sần sùi, lichen hóa (da dày lên)",
-    "treatment": "Dùng kem dưỡng ẩm chuyên sâu, thuốc bôi chứa Corticosteroid hoặc thuốc ức chế calcineurin (theo chỉ định), thuốc kháng histamin để giảm ngứa.",
-    "prevention": "Dưỡng ẩm da thường xuyên, tránh tiếp xúc với chất gây dị ứng hoặc kích ứng (xà phòng mạnh, vải len).",
-    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
-  },
-  {
-    "articleID": 3,
     "title": "Mề đay (Mày đay)",
     "cause": "Dị ứng với thức ăn, thuốc, côn trùng đốt, thời tiết, bụi bẩn",
     "symptoms": "Sẩn phù (nổi ban) trên da, ngứa. Sưng, phù, phát ban từng mảng",
     "treatment": "Thuốc kháng histamin, trong trường hợp nặng, có thể dùng Corticosteroid (theo chỉ định).",
     "prevention": "Xác định và tránh yếu tố gây dị ứng, giữ cơ thể ấm khi thay đổi thời tiết.",
     "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
-  },
-  {
-    "articleID": 4,
-    "title": "Ghẻ nước",
-    "cause": "Ký sinh trùng Sarcoptes scabiei",
-    "symptoms": "Ngứa dữ dội, đặc biệt về đêm, mụn nước nhỏ ở kẽ ngón tay, cổ tay, có thể xuất hiện rãnh ghẻ. Mẩn đỏ, vảy, nhiễm trùng do gãi nhiều",
-    "treatment": "Bôi thuốc Permethrin 5% (theo chỉ định), vệ sinh sạch sẽ, giặt đồ bằng nước nóng.",
-    "prevention": "Giặt sạch chăn ga, quần áo, tránh tiếp xúc trực tiếp, vệ sinh cá nhân.",
-    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
+    "createdAt": "2025-11-01T10:09:21"
   },
   {
     "articleID": 5,
-    "title": "Lang ben",
-    "cause": "Nấm Malassezia",
-    "symptoms": "Đốm da trắng, nâu hoặc hồng, có thể bong vảy nhẹ. Ngứa nhẹ, da không đều màu",
-    "treatment": "Bôi kem/dung dịch kháng nấm (Ketoconazole, Selenium Sulfide), uống thuốc kháng nấm nếu bệnh lan rộng.",
-    "prevention": "Giữ da khô thoáng, sạch sẽ, tránh đổ mồ hôi nhiều, mặc quần áo thoáng mát.",
-    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
-  },
-  {
-    "articleID": 6,
     "title": "Zona thần kinh",
     "cause": "Virus Varicella Zoster (cùng loại với thủy đậu)",
     "symptoms": "Phát ban, mụn nước mọc thành dải dọc theo một đường dây thần kinh, đau rát, đau buốt. Sốt nhẹ, mệt mỏi, nhạy cảm với ánh sáng",
     "treatment": "Thuốc kháng virus (Acyclovir, Famciclo), thuốc giảm đau. Phải thăm khám bác sĩ ngay lập tức.",
     "prevention": "Tiêm vắc-xin phòng bệnh, tránh tiếp xúc với người bị thủy đậu.",
     "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
+    "createdAt": "2025-11-01T10:09:21"
   },
   {
-    "articleID": 7,
+    "articleID": 6,
     "title": "Hắc lào",
     "cause": "Nấm Trichophyton, Epidermophyton",
     "symptoms": "Đốm tròn màu đỏ hoặc nâu, ngứa nhiều, viền rõ ràng. Bong vảy ở rìa, có thể lan rộng",
     "treatment": "Thuốc bôi kháng nấm (Ketoconazole, Clotrimazole), uống thuốc nếu vùng da bị lan rộng.",
     "prevention": "Giữ da khô sạch, đặc biệt là vùng bẹn, nách, không dùng chung đồ cá nhân (khăn, quần áo), thay đồ lót hàng ngày.",
     "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
-  },
-  {
-    "articleID": 8,
-    "title": "Viêm da tiếp xúc",
-    "cause": "Hóa chất, mỹ phẩm, kim loại (nickel), cây độc, xà phòng",
-    "symptoms": "Vùng da tiếp xúc với chất gây dị ứng/kích ứng bị đỏ, ngứa, rát. Phồng rộp, chảy dịch, có thể tạo vảy",
-    "treatment": "Rửa sạch vùng da bị ảnh hưởng, bôi thuốc kháng viêm hoặc Corticosteroid tại chỗ (theo chỉ định).",
-    "prevention": "Tránh xa và không sử dụng các sản phẩm gây kích ứng, dùng găng tay bảo hộ.",
-    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
-  },
-  {
-    "articleID": 9,
-    "title": "Nấm da chân",
-    "cause": "Nấm Trichophyton, Epidermophyton",
-    "symptoms": "Ngứa, đỏ, có vảy ở kẽ ngón chân. Da nứt nẻ, có mụn nước nhỏ, mùi hôi",
-    "treatment": "Dùng thuốc bôi kháng nấm, ngâm chân trong nước muối ấm.",
-    "prevention": "Giữ chân khô ráo, đặc biệt sau khi tắm, mang dép thoáng khí, thay tất cotton sạch hàng ngày.",
-    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
-  },
-  {
-    "articleID": 10,
-    "title": "Chốc lở",
-    "cause": "Vi khuẩn Staphylococcus aureus hoặc Streptococcus pyogenes",
-    "symptoms": "Mụn nước hoặc mụn mủ nhỏ, sau đó vỡ và tạo thành vảy màu vàng mật ong. Ngứa nhẹ, đau rát",
-    "treatment": "Dùng thuốc mỡ kháng sinh tại chỗ, trong trường hợp nặng, dùng thuốc kháng sinh đường uống (theo chỉ định).",
-    "prevention": "Vệ sinh cá nhân, rửa tay sạch sẽ, không dùng chung khăn mặt, quần áo.",
-    "imageUrl": "https://www.umcclinic.com.vn/Data/Sites/1/media/y-hoc-thuong-thuc/da-li%E1%BB%85u/khi-n%C3%A0o-c%E1%BA%A7n-kh%C3%A1m-chuy%C3%AAn-khoa-da-li%E1%BB%85u/bac-si-tham-kham-da-lieu.jpg",
-    "createdAt": "2025-10-14T17:00:45"
+    "createdAt": "2025-11-01T10:09:21"
   }
 ]

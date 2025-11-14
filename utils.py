@@ -66,3 +66,12 @@ def build_or_load_faiss(articles, model, faiss_path, titles_path):
     np.save(titles_path, np.array(titles))
     print("✅ FAISS index created and saved.")
     return index, titles
+
+def _load_labels(labels_path):
+    import json
+    with open(labels_path, "r", encoding="utf-8") as f:
+        labels = json.load(f)
+    if isinstance(labels, dict):
+        labels = [labels[k] for k in sorted(labels.keys(), key=lambda x: int(x))]
+    return labels
+
