@@ -2,7 +2,7 @@
 import os, re, json, time, threading
 from typing import Dict, Any, Optional, Tuple
 
-from fastapi import FastAPI, HTTPException, File, UploadFile, Form
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -10,20 +10,24 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from sentence_transformers import SentenceTransformer
 
-# ====== import các module sẵn có của bạn ======
+# ====== import các module của bạn ======
 # ARTICLES_API, ARTICLES_PATH, DOCTORS_API, DOCTORS_PATH, FAISS_PATH, TITLES_PATH, SLOTS_API, APPOINTMENTS_API
 from config import *
 from utils import fetch_and_cache, build_or_load_faiss
 from intents.disease_intent import handle_disease_intent
 from intents.doctor_intent import handle_doctor_intent
-from intents.appointment_intent import start_appointment_booking, handle_time_selection, handle_patient_info
+from intents.appointment_intent import (
+    start_appointment_booking,
+    handle_time_selection,
+    handle_patient_info,
+)
 
 # ====== Env & GenAI ======
 here = os.path.dirname(__file__)
 load_dotenv(dotenv_path=os.path.join(here, ".env"))
 
-# Làm mới dữ liệu định kỳ
-DATA_TTL_SECONDS = int(os.getenv("DATA_TTL_SECONDS", str(60 * 60)))  # mặc định 1 giờ
+# làm mới dữ liệu định kỳ
+DATA_TTL_SECONDS = int(os.getenv("DATA_TTL_SECONDS", str(60 * 60)))  # 1 giờ
 FORCE_RELOAD_ON_START = str(os.getenv("FORCE_RELOAD_ON_START", "true")).lower() in ("1", "true", "yes")
 
 DISABLE_GEMINI = str(os.getenv("DISABLE_GEMINI", "")).lower() in ("1", "true", "yes")
@@ -32,8 +36,7 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
 
 if not GEMINI_API_KEY and not DISABLE_GEMINI:
     raise RuntimeError(
-        "Thiếu GEMINI_API_KEY. Tạo CHATBOT3/.env từ .env.example và điền key,"
-        " hoặc set DISABLE_GEMINI=true cho local dev."
+        "Thiếu GEMINI_API_KEY. Tạo CHATBOT3/.env từ .env.example và điền key, hoặc set DISABLE_GEMINI=true cho local dev."
     )
 
 if not DISABLE_GEMINI:
@@ -42,10 +45,9 @@ if not DISABLE_GEMINI:
 else:
     gen_model = None
 
-# Thời điểm lần load tài nguyên gần nhất
 last_loaded_at = 0.0
 
-# Globals for heavy resources (lazy-loaded)
+# Globals (lazy)
 st_model = None
 articles = None
 doctors = None
@@ -76,7 +78,6 @@ def ensure_resources(force: bool = False):
     now = time.time()
     need_reload = force or (now - last_loaded_at >= DATA_TTL_SECONDS)
 
-    # nếu đã có đủ và chưa cần reload thì thôi
     if st_model is not None and index is not None and not need_reload:
         return
 
@@ -86,43 +87,48 @@ def ensure_resources(force: bool = False):
         if st_model is not None and index is not None and not need_reload:
             return
 
-        print("🔧 Initializing/refreshing resources (ST model, data, FAISS)...")
+        print("🔧 [ensure_resources] Initializing/refreshing resources ...")
+        print(f"    force={force}, TTL={DATA_TTL_SECONDS}s, last_loaded_at={last_loaded_at}, now={now}")
 
-        # 1) model
+        # 1) ST model
         if st_model is None:
             try:
                 st_model = SentenceTransformer("all-MiniLM-L6-v2")
+                print("    ✅ SentenceTransformer loaded.")
             except Exception as e:
                 print("⚠️ Không tải được SentenceTransformer:", e)
                 raise
 
-        # 2) xoá cache file → fetch mới
+        # 2) Xoá cache local → fetch mới để luôn thấy dữ liệu mới nhất
         try:
             _unlink_if_exists(ARTICLES_PATH)
             _unlink_if_exists(DOCTORS_PATH)
-
             raw_articles = fetch_and_cache(ARTICLES_API, ARTICLES_PATH)
             articles = raw_articles or []
+            print(f"    ✅ Articles loaded: {len(articles)} items.")
         except Exception as e:
             print("⚠️ Lỗi tải articles:", e)
             articles = []
 
         try:
             doctors = fetch_and_cache(DOCTORS_API, DOCTORS_PATH)
+            print(f"    ✅ Doctors loaded: {len(doctors)} items.")
         except Exception as e:
             print("⚠️ Lỗi tải doctors:", e)
             doctors = []
 
-        # 3) rebuild/load FAISS
+        # 3) FAISS
         try:
             index, titles = build_or_load_faiss(articles, st_model, FAISS_PATH, TITLES_PATH)
+            if titles is None: titles = []
+            print("    ✅ FAISS index ready. Titles:", len(titles))
         except Exception as e:
             print("⚠️ Lỗi build/load FAISS:", e)
             index, titles = None, []
 
         last_loaded_at = time.time()
         ts = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(last_loaded_at))
-        print(f"✅ Resources ready at {ts}. Next auto-refresh in {DATA_TTL_SECONDS}s.")
+        print(f"✅ [ensure_resources] Done at {ts}. Next auto-refresh in {DATA_TTL_SECONDS}s.")
 
 app = FastAPI(title="Healthcare Chatbot API", version="1.0.0")
 app.add_middleware(
@@ -136,6 +142,7 @@ session_states: Dict[str, Dict[str, Any]] = {}
 class ChatRequest(BaseModel):
     session_id: str
     message: str
+    creator_id: Optional[str] = None  # đưa từ FE
 
 class ChatResponse(BaseModel):
     reply: str
@@ -154,8 +161,8 @@ def _fallback_intent_guess(user_input: str) -> Tuple[Optional[str], Optional[str
         (r"(điều trị|chữa|thuốc)", "hoi_cach_dieu_tri"),
         (r"(nguyên nhân|tại sao)", "hoi_nguyen_nhan"),
         (r"(phòng ngừa|phòng tránh|tiêm|vaccine)", "hoi_phong_ngua"),
-        (r"(bác sĩ|doctor|liên hệ bác sĩ)", "hoi_thong_tin_bac_si"),
-        (r"(đặt lịch|đăng ký khám|book lịch|lịch trống|slot)", "dat_lich"),
+        (r"(bác sĩ|doctor|liên hệ bác sĩ|thông tin bác sĩ)", "hoi_thong_tin_bac_si"),
+        (r"(đặt lịch|đăng ký khám|book lịch|lịch trống|xem lịch|đặt khám|hẹn khám)", "dat_lich"),
     ]
     for pat, intent in patterns:
         if re.search(pat, text):
@@ -179,6 +186,7 @@ Câu nói: "{user_input}"
     try:
         if gen_model is None:
             return _fallback_intent_guess(user_input)
+        print("🧠 [analyze_intent] Prompt sent to Gemini.")
         resp = gen_model.generate_content(prompt)
         text = getattr(resp, "text", "") or ""
         match = re.search(r"\{.*\}", text, re.DOTALL)
@@ -199,7 +207,6 @@ Câu nói: "{user_input}"
     return _fallback_intent_guess(user_input)
 
 def _top_predicted_label_from_state(state: Dict[str, Any]) -> Optional[str]:
-    """Lấy label top-1 từ chẩn đoán ảnh cuối cùng (nếu có)."""
     try:
         diag = state.get("last_image_diagnosis") or {}
         preds = diag.get("predictions") or []
@@ -211,7 +218,6 @@ _GENERIC_REF_PHRASES = {
     "bệnh này", "bệnh đó", "bệnh kia", "loại này", "nó", "cái này",
     "triệu chứng", "điều trị", "nguyên nhân", "phòng ngừa", "phòng tránh",
 }
-
 def _is_generic_entity(entity: Optional[str]) -> bool:
     if not entity:
         return True
@@ -224,11 +230,6 @@ def _resolve_entity_with_image_context(
     entity: Optional[str],
     state: Dict[str, Any]
 ) -> Tuple[Optional[str], Optional[str], bool]:
-    """
-    Nếu có chẩn đoán ảnh trong session và intent là nhóm bệnh, mà entity còn mơ hồ,
-    thì dùng label top-1 của ảnh làm entity mặc định.
-    Trả về (intent, entity_resolved, used_context: bool)
-    """
     if intent in DISEASE_INTENTS and _is_generic_entity(entity):
         top_label = _top_predicted_label_from_state(state)
         if top_label:
@@ -281,11 +282,8 @@ async def diagnose_image(
             seg_path=os.path.join(here, 'models', 'unet_segmenter.pth') if segment else None,
             labels_path=os.path.join(here, 'models', 'labels.json'),
         )
-        # Lưu vào session (chỉ predictions, không article)
         if session_id:
-            session_states.setdefault(session_id, {})['last_image_diagnosis'] = {
-                'predictions': preds
-            }
+            session_states.setdefault(session_id, {})['last_image_diagnosis'] = {'predictions': preds}
         return {"predictions": preds}
     except Exception as e:
         print("⚠️ diagnose-image error:", e)
@@ -301,13 +299,20 @@ def reset(req: ResetRequest):
     return {"ok": True}
 
 @app.post("/api/chat", response_model=ChatResponse)
-def chat(req: ChatRequest):
+async def chat(req: ChatRequest, request: Request):
     sid = (req.session_id or "default").strip()
     msg = (req.message or "").strip()
     if not msg:
         raise HTTPException(status_code=400, detail="message rỗng")
 
+    # Lấy creator_id từ header hoặc body
+    creator_id = request.headers.get("X-User-Id") or (req.creator_id or "")
+    if creator_id:
+        print(f"[chat] sid={sid} | creator_id={creator_id}")
+
     state = session_states.get(sid, {})
+    if creator_id:
+        state["creator_id"] = str(creator_id)
 
     # init heavy resources (lazy)
     try:
@@ -315,34 +320,59 @@ def chat(req: ChatRequest):
     except Exception as e:
         print("⚠️ ensure_resources failed:", e)
 
+    # luồng đặt lịch (đang chờ người dùng chọn giờ / nhập thông tin)
     if state.get("step") == "cho_chon_gio":
         reply, state = handle_time_selection(msg, state)
-    elif state.get("step") == "nhap_thong_tin":
+        session_states[sid] = state
+        return ChatResponse(reply=reply, state=state)
+
+    if state.get("step") == "nhap_thong_tin":
         reply, state = handle_patient_info(msg, state, APPOINTMENTS_API)
+        session_states[sid] = state
+        return ChatResponse(reply=reply, state=state)
+
+    # 1) intent ban đầu
+    intent, entity = analyze_intent(msg)
+
+    # 2) HARD ROUTING: nếu câu có ý đặt lịch thì chuyển thẳng sang flow đặt lịch
+    lower = msg.lower()
+    booking_triggers = ("đặt lịch", "book lịch", "lịch trống", "xem lịch", "đặt khám", "hẹn khám")
+    if any(k in lower for k in booking_triggers):
+        reply, state = start_appointment_booking(
+            state,
+            SLOTS_API=SLOTS_API,
+            doctors=doctors,
+            user_text=msg
+        )
+        session_states[sid] = state
+        return ChatResponse(reply=reply, state=state)
+
+    # 3) dùng ngữ cảnh ảnh cho nhóm bệnh
+    intent, entity, used_image_ctx = _resolve_entity_with_image_context(msg, intent, entity, state)
+
+    # 4) điều phối
+    if not intent:
+        reply = "Xin lỗi, tôi chưa hiểu ý bạn nói."
+    elif intent in DISEASE_INTENTS:
+        reply, state = handle_disease_intent(intent, entity, msg, st_model, index, articles, state)
+    elif intent == "hoi_thong_tin_bac_si":
+        reply, state = handle_doctor_intent(entity, doctors, st_model, state)
+        # nếu người dùng có chữ "đặt lịch" trong câu hỏi bác sĩ → nhảy vào flow đặt lịch luôn
+        if any(k in lower for k in booking_triggers):
+            reply, state = start_appointment_booking(state, SLOTS_API=SLOTS_API, doctors=doctors, user_text=msg)
+    elif intent == "dat_lich":
+        state["user_input"] = msg
+        reply, state = start_appointment_booking(state, SLOTS_API=SLOTS_API, doctors=doctors, user_text=msg)
     else:
-        intent, entity = analyze_intent(msg)
-        intent, entity, used_image_ctx = _resolve_entity_with_image_context(msg, intent, entity, state)
+        reply = "Tôi chưa hiểu yêu cầu của bạn."
 
-        if not intent:
-            reply = "Xin lỗi, tôi chưa hiểu ý bạn nói."
-        elif intent in DISEASE_INTENTS:
-            reply, state = handle_disease_intent(intent, entity, msg, st_model, index, articles, state)
-        elif intent == "hoi_thong_tin_bac_si":
-            reply, state = handle_doctor_intent(entity, doctors, st_model, state)
-        elif intent == "dat_lich":
-            state["user_input"] = msg
-            reply, state = start_appointment_booking(state, SLOTS_API)
-        else:
-            reply = "Tôi chưa hiểu yêu cầu của bạn."
-
-        if used_image_ctx:
-            reply = f"(Theo chẩn đoán hình ảnh gần nhất: {entity})\n" + reply
+    if 'used_image_ctx' in locals() and used_image_ctx:
+        reply = f"(Theo chẩn đoán hình ảnh gần nhất: {entity})\n" + reply
 
     session_states[sid] = state
     return ChatResponse(reply=reply, state=state)
 
 def _bg_auto_refresh_loop():
-    # làm mới định kỳ
     while True:
         try:
             time.sleep(DATA_TTL_SECONDS)
@@ -353,9 +383,8 @@ def _bg_auto_refresh_loop():
 
 @app.on_event("startup")
 def _on_startup():
-    # luôn load mới khi start nếu bật env
+    print("[startup] ensure_resources(force=True)")
     ensure_resources(force=FORCE_RELOAD_ON_START)
-    # chạy thread refresh định kỳ
     t = threading.Thread(target=_bg_auto_refresh_loop, daemon=True)
     t.start()
 

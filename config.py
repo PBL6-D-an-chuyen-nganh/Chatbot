@@ -2,7 +2,7 @@ import os
 
 # API
 BASE_URL = "http://localhost:8080/api"
-ARTICLES_API = f"{BASE_URL}/articles"
+ARTICLES_API = f"{BASE_URL}/articles/all"
 DOCTORS_API = f"{BASE_URL}/doctors"
 SLOTS_API = f"{BASE_URL}/doctors/{{id}}/available-slots"
 APPOINTMENTS_API = f"{BASE_URL}/appointments/create"
