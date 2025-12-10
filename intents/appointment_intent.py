@@ -1,13 +1,14 @@
 from typing import Dict, Any, List, Tuple, Optional
 import re
 import requests
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 # =======================
 # Helpers chuẩn hoá chuỗi
 # =======================
 def _norm(s: str) -> str:
     return re.sub(r"\s+", " ", (s or "").strip().lower())
+
 
 def _split_tokens(s: str) -> List[str]:
     s = _norm(s)
@@ -18,6 +19,7 @@ def _split_tokens(s: str) -> List[str]:
     )
     return [t for t in s.split() if t]
 
+
 def _score_name(q: str, name: str) -> float:
     qset, nset = set(_split_tokens(q)), set(_split_tokens(name))
     if not qset or not nset:
@@ -25,7 +27,12 @@ def _score_name(q: str, name: str) -> float:
     inter = qset & nset
     return 2.0 * len(inter) / float(len(qset) + len(nset))
 
+
 def _guess_name_after_bac_si(text: str) -> Optional[str]:
+    """
+    Lấy phần sau 'bác sĩ ...' để đoán tên.
+    Ví dụ: 'đặt lịch bác sĩ Nguyễn Văn A chiều mai' -> 'Nguyễn Văn A'
+    """
     m = re.search(r"bác\s*sĩ\s+(.+)$", (text or ""), flags=re.IGNORECASE)
     if not m:
         return None
@@ -38,7 +45,13 @@ def _guess_name_after_bac_si(text: str) -> Optional[str]:
     cand = re.sub(r"[\.,:;!?()\[\]{}<>\"']", " ", cand)
     return re.sub(r"\s+", " ", cand).strip() or None
 
+
 def _find_best_doctor(doctors: List[Dict[str, Any]], user_text: str) -> Optional[Dict[str, Any]]:
+    """
+    Thử đoán bác sĩ từ câu nói của user.
+    - Ưu tiên phần sau 'bác sĩ ...'
+    - Nếu không có, match cả câu với tên bác sĩ.
+    """
     if not doctors:
         return None
 
@@ -54,7 +67,7 @@ def _find_best_doctor(doctors: List[Dict[str, Any]], user_text: str) -> Optional
         if best and best_score >= 0.5:
             return best
 
-    # 2) fallback: match cả câu
+    # 2) Fallback: match cả câu
     best, best_score = None, 0.0
     for d in doctors:
         sc = _score_name(user_text, d.get("name", ""))
@@ -63,11 +76,12 @@ def _find_best_doctor(doctors: List[Dict[str, Any]], user_text: str) -> Optional
     print(f"[appointment] best_by_full_sentence: name='{best.get('name') if best else None}', score={best_score:.3f}")
     return best if best_score >= 0.4 else None
 
+
 # =======================
 # Lấy/ghi doctor_id trong state
 # =======================
 def _extract_doctor_id_from_state(state: Dict[str, Any]) -> Optional[Any]:
-    keys = ["doctor_id", "doctorID", "doctorId"]
+    keys = ["doctor_id", "doctorID", "doctorId", "userId"]
     for k in keys:
         if state.get(k) is not None:
             return state[k]
@@ -77,166 +91,176 @@ def _extract_doctor_id_from_state(state: Dict[str, Any]) -> Optional[Any]:
             return sel[k]
     return None
 
+
 def _doctor_label_from_state(state: Dict[str, Any]) -> str:
     doc = state.get("selected_doctor") or {}
     return doc.get("name") or "bác sĩ đã chọn"
+
 
 # =======================
 # Chuẩn hoá slots
 # =======================
 def _normalize_slots(slots_raw: Any) -> List[Dict[str, Any]]:
+    """
+    Chuẩn hoá dữ liệu lịch trống về dạng:
+    {
+        "date": "YYYY-MM-DD",
+        "time": "HH:MM[:SS]",
+        "datetime": "YYYY-MM-DD HH:MM:SS",
+        "display": "...",
+        "location": "..."
+    }
+    """
     out: List[Dict[str, Any]] = []
+
     if isinstance(slots_raw, list):
         for s in slots_raw:
-            if not isinstance(s, dict): 
+            if not isinstance(s, dict):
                 continue
             time_str = s.get("time") or s.get("startTime") or s.get("start")
             date_str = s.get("date")
-            if time_str and date_str:
-                dt = f"{date_str} {time_str}"
-                out.append({
-                    "date": date_str,
-                    "time": time_str,
-                    "datetime": dt,
-                    "display": dt,
-                    "location": s.get("location") or s.get("room") or "",
-                })
+            if not time_str or not date_str:
+                continue
+
+            # Chuẩn hoá datetime "YYYY-MM-DD HH:MM:SS"
+            if len(time_str) == 5:  # HH:MM
+                dt_iso = f"{date_str} {time_str}:00"
+            else:
+                dt_iso = f"{date_str} {time_str}"
+
+            out.append({
+                "date": date_str,
+                "time": time_str,
+                "datetime": dt_iso,
+                "display": dt_iso,
+                "location": s.get("location") or s.get("room") or "",
+            })
+
     elif isinstance(slots_raw, dict):
         for date_str, times in slots_raw.items():
-            if not isinstance(times, list): 
+            if not isinstance(times, list):
                 continue
             for t in times:
                 time_str = str(t)
-                dt = f"{date_str} {time_str}"
+                if len(time_str) == 5:
+                    dt_iso = f"{date_str} {time_str}:00"
+                else:
+                    dt_iso = f"{date_str} {time_str}"
+
                 out.append({
                     "date": date_str,
                     "time": time_str,
-                    "datetime": dt,
-                    "display": dt,
+                    "datetime": dt_iso,
+                    "display": dt_iso,
                     "location": "",
                 })
+
     # sort
     def _to_key(s):
         try:
-            return datetime.strptime(s.get("datetime",""), "%Y-%m-%d %H:%M:%S")
+            return datetime.strptime(s.get("datetime", ""), "%Y-%m-%d %H:%M:%S")
         except Exception:
             return datetime.max
+
     out.sort(key=_to_key)
     return out
+
 
 def _format_slots(slots: List[Dict[str, Any]]) -> str:
     if not slots:
         return "❌ Hiện chưa có lịch trống nào."
     lines = [
         "🗓️ Các lịch trống (chọn số):",
-        "(Sau khi chọn giờ, bạn sẽ được hướng dẫn nhập Họ tên, SĐT, Giới tính, Ngày sinh, Email, Triệu chứng)"
+        "(Sau khi chọn giờ, bạn sẽ được hướng dẫn nhập Họ tên và SĐT bệnh nhân.)"
     ]
     for i, s in enumerate(slots, 1):
         lines.append(f"{i}. {s['display']}{(' • ' + s['location']) if s.get('location') else ''}")
     return "\n".join(lines)
 
-# =======================
-# Chuẩn hoá form bệnh nhân
-# =======================
-_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-
-def _normalize_gender(g: str) -> Optional[str]:
-    if not g:
+def _minutes_from_time_str(time_str: str) -> Optional[int]:
+    """
+    '07:35:00' -> 7*60+35
+    '07:35'    -> 7*60+35
+    """
+    if not time_str:
         return None
-    gl = g.strip().lower()
-    if gl in ("nam", "male", "m"):
-        return "Male"
-    if gl in ("nữ", "nu", "female", "f"):
-        return "Female"
-    if gl in ("khác", "khac", "other", "o"):
-        return "Other"
-    return None  
-
-def _normalize_dob(s: str) -> Optional[str]:
-    """
-    Nhận 'YYYY-MM-DD' hoặc 'DD/MM/YYYY' → trả 'YYYY-MM-DD'.
-    """
-    if not s:
+    parts = time_str.split(":")
+    if len(parts) < 2:
         return None
-    s = s.strip()
-    # thử YYYY-MM-DD
     try:
-        dt = datetime.strptime(s, "%Y-%m-%d")
-        return dt.strftime("%Y-%m-%d")
-    except Exception:
-        pass
-    # thử DD/MM/YYYY
-    try:
-        dt = datetime.strptime(s, "%d/%m/%Y")
-        return dt.strftime("%Y-%m-%d")
-    except Exception:
-        pass
-    return None
+        h = int(parts[0])
+        m = int(parts[1])
+        return h * 60 + m
+    except ValueError:
+        return None
 
-def _init_or_update_patient_draft(state: Dict[str, Any], **updates) -> Dict[str, Any]:
-    draft = state.get("patient_draft") or {
-        "name": "",
-        "phone": "",
-        "gender": "",
-        "dateOfBirth": "",
-        "email": "",
-        "symptom": "",
-    }
-    for k, v in updates.items():
-        if v is not None:
-            draft[k] = v
-    state["patient_draft"] = draft
-    return draft
-
-def _all_patient_fields_ready(d: Dict[str, Any]) -> bool:
-    return (
-        bool(d.get("name")) and
-        bool(d.get("phone")) and
-        bool(d.get("gender")) and
-        bool(d.get("dateOfBirth")) and
-        bool(d.get("email"))
-    )
-
-def _format_missing_fields_prompt(d: Dict[str, Any]) -> str:
-    if not d.get("name") or not d.get("phone"):
-        return "Vui lòng nhập theo mẫu: **Họ tên - SĐT - (tuỳ chọn) Triệu chứng**"
-    if not d.get("gender"):
-        return "Vui lòng nhập **Giới tính** (Nam/Nữ/Khác)."
-    if not d.get("dateOfBirth"):
-        return "Vui lòng nhập **Ngày sinh** theo định dạng YYYY-MM-DD hoặc DD/MM/YYYY."
-    if not d.get("email"):
-        return "Vui lòng nhập **Email**."
-    return ""
-
-def _try_parse_full_line_once(user_text: str) -> Dict[str, Any]:
+def _extract_date_and_time(user_text: str) -> Tuple[Optional[date], Optional[int], int, Optional[str]]:
     """
-    Cố gắng parse 1 shot:
-    'Họ tên - SĐT - Giới tính - Ngày sinh - Email - (tuỳ chọn) Triệu chứng'
+    Trả về:
+      - day: datetime.date hoặc None
+      - hour: int hoặc None
+      - minute: int (mặc định 0)
+      - half_day: 'morning' | 'afternoon' | 'evening' | None
+    Hỗ trợ:
+      - ngày: 15/12, 15-12, 15/12/2025, ...
+      - giờ: 16:30, 16h30, 16h, 16 giờ, 7 giờ 35 phút, 7 gio 35 phut
     """
-    parts = [p.strip() for p in user_text.split("-")]
-    out = {
-        "name": "",
-        "phone": "",
-        "gender": "",
-        "dateOfBirth": "",
-        "email": "",
-        "symptom": "",
-    }
-    if len(parts) >= 1:
-        out["name"] = parts[0]
-    if len(parts) >= 2:
-        out["phone"] = parts[1]
-    if len(parts) >= 3:
-        g = _normalize_gender(parts[2])
-        out["gender"] = g or ""
-    if len(parts) >= 4:
-        dob = _normalize_dob(parts[3])
-        out["dateOfBirth"] = dob or ""
-    if len(parts) >= 5:
-        out["email"] = parts[4] if _EMAIL_RE.match(parts[4]) else ""
-    if len(parts) >= 6:
-        out["symptom"] = parts[5]
-    return out
+    text = (user_text or "").lower()
+
+    # --- 1) Parse ngày: dd/mm(/yyyy) hoặc dd-mm(-yyyy) ---
+    day: Optional[date] = None
+    m_date = re.search(r"\b(\d{1,2})[/-](\d{1,2})(?:[/-](\d{4}))?", text)
+    if m_date:
+        d = int(m_date.group(1))
+        m = int(m_date.group(2))
+        if m_date.group(3):
+            y = int(m_date.group(3))
+        else:
+            y = datetime.now().year
+        try:
+            day = date(y, m, d)
+        except ValueError:
+            day = None
+
+    # --- 2) Parse giờ ---
+    hour: Optional[int] = None
+    minute: int = 0
+
+    # 2.1: dạng HH:MM
+    m_time = re.search(r"\b(\d{1,2}):(\d{2})\b", text)
+    if m_time:
+        hour = int(m_time.group(1))
+        minute = int(m_time.group(2))
+    else:
+        # 2.2: dạng HHhMM
+        m_time = re.search(r"\b(\d{1,2})h(\d{2})\b", text)
+        if m_time:
+            hour = int(m_time.group(1))
+            minute = int(m_time.group(2))
+        else:
+            # 2.3: dạng "7 giờ 35 phút" / "7 gio 35 phut"
+            m_time = re.search(r"\b(\d{1,2})\s*(?:giờ|gio|h)\s*(\d{1,2})\s*(?:phút|phut|p)?\b", text)
+            if m_time:
+                hour = int(m_time.group(1))
+                minute = int(m_time.group(2))
+            else:
+                # 2.4: dạng "16h" / "16 giờ"
+                m_time = re.search(r"\b(\d{1,2})\s*(?:h|giờ|gio)\b", text)
+                if m_time:
+                    hour = int(m_time.group(1))
+                    minute = 0
+
+    # --- 3) Sáng / chiều / tối ---
+    half_day: Optional[str] = None
+    if "sáng" in text:
+        half_day = "morning"
+    elif "chiều" in text:
+        half_day = "afternoon"
+    elif "tối" in text or "đêm" in text:
+        half_day = "evening"
+
+    return day, hour, minute, half_day
+
 
 # =======================
 # Entry points
@@ -247,43 +271,172 @@ def start_appointment_booking(
     doctors: Optional[List[Dict[str, Any]]] = None,
     user_text: str = "",
 ) -> Tuple[str, Dict[str, Any]]:
-    # 1) xác định doctor_id
+    """
+    Flow đặt lịch:
+    - Nếu user KHÔNG chỉ định bác sĩ, nhưng có ngày + thời gian (giờ hoặc sáng/chiều/tối):
+        -> quét tất cả bác sĩ, tìm những người rảnh vào khoảng đó, cho user chọn.
+    - Nếu user CHỈ ĐỊNH bác sĩ:
+        -> lấy toàn bộ lịch trống của bác sĩ đó (giống code cũ).
+    - Nếu user chỉ nói mỗi ngày, không nói giờ/buổi:
+        -> hỏi lại: "Bạn muốn đặt lịch với bác sĩ nào, và vào lúc nào ạ?"
+    """
+    text = user_text or ""
+    text_lower = text.lower()
+
+    day, hour, minute, half_day = _extract_date_and_time(text)
+    has_time_info = (hour is not None) or (half_day is not None)
+    print(f"[appointment] parsed_date={day}, hour={hour}, minute={minute}, half_day={half_day}")
+
+    # 1) xác định doctor_id từ state hoặc tên trong câu
     doc_id = _extract_doctor_id_from_state(state)
     if not doc_id and doctors:
         cand = _find_best_doctor(doctors, user_text)
         if cand:
             state["selected_doctor"] = cand
-            doc_id = cand.get("doctorID") or cand.get("id") or cand.get("doctorId")
+            doc_id = cand.get("doctorId")
             state["doctor_id"] = doc_id
 
-    if not doc_id:
-        return "Bạn muốn đặt lịch với bác sĩ nào ạ?", state
+    # ===== CASE A: user không chỉ định bác sĩ, nhưng có ngày + thông tin thời gian (giờ hoặc sáng/chiều/tối) =====
+    if day and has_time_info and not doc_id and doctors:
+        date_str = day.strftime("%Y-%m-%d")
+        desired_minutes: Optional[int] = None
+        if hour is not None:
+            desired_minutes = hour * 60 + minute
 
-    print(f"[appointment] start_appointment_booking: doctor_id={doc_id}")
+        NEAR_THRESHOLD = 35 
 
-    # 2) Fetch slots
-    try:
-        url = SLOTS_API.format(id=doc_id)  
-        print(f"[appointment] fetching slots URL: {url}")
-        resp = requests.get(url, timeout=10)
-        resp.raise_for_status()
-        if resp.headers.get("content-type", "").startswith("application/json"):
-            raw = resp.json()
+        all_candidates: List[Dict[str, Any]] = []
+
+        for d in doctors:
+            d_id = d.get("doctorID") or d.get("id") or d.get("doctorId") or d.get("userId")
+            if not d_id:
+                continue
+
+            try:
+                url = SLOTS_API.format(id=d_id)
+                print(f"[appointment] fetching slots for doctor {d_id} URL: {url}")
+                resp = requests.get(url, timeout=10)
+                resp.raise_for_status()
+                raw = resp.json() if resp.headers.get("content-type","").startswith("application/json") else {}
+                slots = _normalize_slots(raw)
+            except Exception as e:
+                print(f"[appointment] fetch slots error for doctor {d_id}: {e}")
+                continue
+
+            for s in slots:
+                if s.get("date") != date_str:
+                    continue
+
+                slot_minutes = _minutes_from_time_str(s.get("time",""))
+                if slot_minutes is None:
+                    continue
+
+                # Lọc theo buổi nếu có
+                h_slot = slot_minutes // 60
+                if half_day == "morning" and not (0 <= h_slot < 12):
+                    continue
+                if half_day == "afternoon" and not (12 <= h_slot < 18):
+                    continue
+                if half_day == "evening" and not (18 <= h_slot <= 23):
+                    continue
+
+                is_exact = False
+                diff_min = None
+                if desired_minutes is not None:
+                    diff_min = abs(slot_minutes - desired_minutes)
+                    is_exact = (diff_min == 0)
+                else:
+                    diff_min = 0
+
+                all_candidates.append({
+                    "date": s["date"],
+                    "time": s["time"],
+                    "datetime": s["datetime"],
+                    "display": s["datetime"],
+                    "location": d.get("name") or "",  # show tên bác sĩ sau dấu •
+                    "doctorId": d_id,
+                    "is_exact": is_exact,
+                    "diff_min": diff_min,
+                })
+
+        if not all_candidates:
+            return (
+                "Hiện tại em chưa tìm được bác sĩ nào rảnh đúng thời gian đó. "
+                "Anh/chị có thể cho em một khoảng thời gian linh hoạt hơn "
+                "(ví dụ: sáng/chiều hoặc giờ khác) hoặc nói rõ muốn khám với bác sĩ nào ạ?",
+                state,
+            )
+
+        # Ưu tiên slot khớp chính xác hh:mm
+        exact_slots = [c for c in all_candidates if c["is_exact"]]
+        if exact_slots:
+            chosen_list = sorted(exact_slots, key=lambda c: c["datetime"])
         else:
-            raw = []
-        slots = _normalize_slots(raw)
-    except Exception as e:
-        print(f"[appointment] fetch slots error: {e}")
-        return "Xin lỗi, không lấy được lịch trống. Vui lòng thử lại sau.", state
+            # Không có giờ chính xác -> lấy giờ gần xung quanh (± NEAR_THRESHOLD phút)
+            near_slots = [
+                c for c in all_candidates
+                if c["diff_min"] is not None and c["diff_min"] <= NEAR_THRESHOLD
+            ]
+            if not near_slots:
+                # quá xa, fallback như cũ
+                return (
+                    "Hiện tại em chưa tìm được bác sĩ nào rảnh đúng thời gian đó. "
+                    "Anh/chị có thể cho em một khoảng thời gian linh hoạt hơn "
+                    "(ví dụ: sáng/chiều hoặc giờ khác) hoặc nói rõ muốn khám với bác sĩ nào ạ?",
+                    state,
+                )
+            # sắp xếp theo gần nhất trước
+            chosen_list = sorted(near_slots, key=lambda c: (c["diff_min"], c["datetime"]))
 
-    print(f"[appointment] slots received: {len(slots)}")
+        # Giới hạn số lượng gợi ý (ví dụ 10)
+        chosen_list = chosen_list[:10]
 
-    state["step"] = "cho_chon_gio"
-    state["pending_slots"] = slots
-    # show bác sĩ kèm lịch
-    doc_name = _doctor_label_from_state(state)
-    prefix = f"{doc_name}\n\n" if doc_name else ""
-    return prefix + _format_slots(slots), state
+        state["step"] = "cho_chon_gio"
+        state["pending_slots"] = chosen_list
+
+        # Format message cho user
+        lines = [
+            f"Vào khoảng **{day.strftime('%d/%m/%Y')}**",
+            "Em tìm được các lịch sau, anh/chị chọn giúp em **số thứ tự** ạ:",
+        ]
+        for i, s in enumerate(chosen_list, 1):
+            doc_name = s.get("location") or ""
+            lines.append(f"{i}. {s['datetime']}{(' • ' + doc_name) if doc_name else ''}")
+
+        return "\n".join(lines), state
+
+    # ===== CASE B: đã có doctor_id (user đã chỉ định bác sĩ hoặc chọn trước đó) =====
+    if doc_id:
+        print(f"[appointment] start_appointment_booking: doctor_id={doc_id}")
+        try:
+            url = SLOTS_API.format(id=doc_id)
+            print(f"[appointment] fetching slots URL: {url}")
+            resp = requests.get(url, timeout=10)
+            resp.raise_for_status()
+            if resp.headers.get("content-type", "").startswith("application/json"):
+                raw = resp.json()
+            else:
+                raw = []
+            slots = _normalize_slots(raw)
+        except Exception as e:
+            print(f"[appointment] fetch slots error: {e}")
+            return "Xin lỗi, không lấy được lịch trống. Vui lòng thử lại sau.", state
+
+        print(f"[appointment] slots received: {len(slots)}")
+
+        state["step"] = "cho_chon_gio"
+        state["pending_slots"] = slots
+        doc_name = _doctor_label_from_state(state)
+        prefix = f"{doc_name}\n\n" if doc_name else ""
+        return prefix + _format_slots(slots), state
+
+    # ===== CASE C: không có doctor, cũng không đủ thông tin giờ/buổi =====
+    return (
+        "Bạn muốn đặt lịch với bác sĩ nào, và vào lúc nào ạ? "
+        "(ví dụ: đặt lịch bác sĩ A lúc 15h chiều mai, hoặc sáng 15/12 khám bác sĩ nào cũng được)",
+        state,
+    )
+
 
 def handle_time_selection(user_text: str, state: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     slots = state.get("pending_slots") or []
@@ -297,105 +450,110 @@ def handle_time_selection(user_text: str, state: Dict[str, Any]) -> Tuple[str, D
 
     chosen = slots[idx]
     state["chosen_slot"] = chosen
-    state["step"] = "nhap_thong_tin"
 
-    # reset/khởi tạo draft
-    _init_or_update_patient_draft(state, symptom="")
+    # Nếu slot có thông tin bác sĩ (case nhiều bác sĩ) -> lưu vào state
+    doc_id = chosen.get("userId")
+    doc_name = chosen.get("doctorName") or chosen.get("doctor_name")
+    if doc_id:
+        state["doctor_id"] = doc_id
+        state["selected_doctor"] = {
+            "id": doc_id,
+            "name": doc_name or "bác sĩ",
+        }
+
+    # chuyển sang nhập thông tin từng trường
+    state["step"] = "nhap_thong_tin"
+    state["patient_info"] = {}
+    state["patient_step"] = "name"
 
     return (
         f"Bạn chọn khung giờ: {chosen['display']}.\n"
-        f"Vui lòng nhập thông tin bệnh nhân. Bạn có thể:\n"
-        f"• Nhập nhanh theo mẫu **Họ tên - SĐT - Giới tính - Ngày sinh - Email - (tuỳ chọn) Triệu chứng**\n"
-        f"  Ví dụ: Nguyễn Văn A - 0912345678 - Nam - 01/02/1990 - a@example.com - Ngứa toàn thân\n"
-        f"• Hoặc nhập tối thiểu **Họ tên - SĐT - (tuỳ chọn) Triệu chứng**, sau đó tôi sẽ hỏi tiếp.",
+        f"Trước tiên, anh/chị cho em xin **Họ tên** của bệnh nhân ạ.",
         state,
     )
 
+
 def handle_patient_info(user_text: str, state: Dict[str, Any], APPOINTMENTS_API: str) -> Tuple[str, Dict[str, Any]]:
-    # Lấy/khởi tạo draft
-    draft = state.get("patient_draft") or {
-        "name": "",
-        "phone": "",
-        "gender": "",
-        "dateOfBirth": "",
-        "email": "",
-        "symptom": "",
-    }
+    """
+    Flow nhập thông tin đơn giản:
+    - Bước 1: hỏi Họ tên (patient_step = 'name')
+    - Bước 2: hỏi SĐT   (patient_step = 'phone')
+    Chỉ bắt buộc 2 field này. Các field khác để trống.
+    """
+    step = state.get("patient_step") or "name"
+    info = state.get("patient_info") or {}
 
-    # Thử parse 1 lần đầy đủ
-    parsed = _try_parse_full_line_once(user_text)
+    text = user_text.strip()
 
-    # Nếu người dùng nhập dạng cũ: 'Họ tên - SĐT - Triệu chứng'
-    if parsed["name"] and parsed["phone"] and not parsed["gender"] and not parsed["dateOfBirth"] and not parsed["email"]:
-        # cập nhật name/phone/symptom
-        draft = _init_or_update_patient_draft(
+    # Bước 1: Họ tên
+    if step == "name":
+        if not text:
+            return "Anh/chị vui lòng cho em xin **Họ tên** của bệnh nhân ạ.", state
+
+        info["name"] = text
+        state["patient_info"] = info
+        state["patient_step"] = "phone"
+
+        return "Dạ em cảm ơn ạ. Anh/chị cho em xin thêm **Số điện thoại** liên hệ nhé.", state
+
+    # Bước 2: Số điện thoại
+    if step == "phone":
+        digits = re.sub(r"\D", "", text)
+        if len(digits) < 9:
+            return "Số điện thoại chưa đúng lắm, anh/chị nhập lại giúp em (ít nhất 9 chữ số) nhé.", state
+
+        info["phone"] = digits
+        state["patient_info"] = info
+
+        # Lấy slot & doctor để tạo lịch
+        slot = state.get("chosen_slot") or {}
+        doc_id = _extract_doctor_id_from_state(state)
+        creator_id = state.get("creator_id")
+
+        if not doc_id or not slot:
+            return "Thiếu thông tin đặt lịch. Vui lòng bắt đầu lại với 'đặt lịch'.", state
+
+        payload = {
+            "patientInfo": {
+                "name": info["name"],
+                # Các field khác để rỗng (tuỳ backend của bạn)
+                "email": "",
+                "phoneNumber": info["phone"],
+                "gender": "",
+                "dateOfBirth": "",
+            },
+            "time": f"{slot['date']}T{slot['time']}",
+            "note": "",
+            "doctorId": doc_id,
+            "creatorId": str(creator_id) if creator_id else None,
+        }
+
+        print(f"[appointment] booking payload: {payload}")
+
+        try:
+            resp = requests.post(APPOINTMENTS_API, json=payload, timeout=100)
+            resp.raise_for_status()
+            _ = resp.json() if resp.headers.get("content-type", "").startswith("application/json") else {}
+        except Exception as e:
+            print(f"[appointment] create appointment error: {e}")
+            return "Xin lỗi, tạo lịch khám thất bại. Bạn vui lòng thử lại sau.", state
+
+        # reset flow
+        state.pop("pending_slots", None)
+        state.pop("chosen_slot", None)
+        state.pop("patient_info", None)
+        state["step"] = None
+        state["patient_step"] = None
+
+        doc_name = (state.get("selected_doctor") or {}).get("name") or "bác sĩ"
+        display_time = slot.get("display") or f"{slot.get('date','')} {slot.get('time','')}"
+        return (
+            f"Đã đặt lịch thành công cho **{info['name']}**, SĐT **{info['phone']}** "
+            f"với {doc_name} vào lúc **{display_time}**.\n"
+            "Cảm ơn anh/chị đã đặt lịch khám!",
             state,
-            name=parsed["name"],
-            phone=parsed["phone"],
-            symptom=parsed["symptom"] or draft.get("symptom",""),
         )
-    else:
-        # Người dùng có thể đã nhập đầy đủ hoặc một phần các field mới
-        if parsed["name"]:
-            draft["name"] = parsed["name"]
-        if parsed["phone"]:
-            draft["phone"] = parsed["phone"]
-        if parsed["symptom"]:
-            draft["symptom"] = parsed["symptom"]
-        if parsed["gender"]:
-            draft["gender"] = parsed["gender"]
-        if parsed["dateOfBirth"]:
-            draft["dateOfBirth"] = parsed["dateOfBirth"]
-        if parsed["email"]:
-            draft["email"] = parsed["email"]
-        state["patient_draft"] = draft
 
-    # Nếu vẫn thiếu -> hỏi lần lượt
-    missing_prompt = _format_missing_fields_prompt(draft)
-    if missing_prompt:
-        return missing_prompt, state
-
-    # Validate cuối: email hợp lệ?
-    if not _EMAIL_RE.match(draft["email"]):
-        return "Email chưa hợp lệ. Vui lòng nhập lại email.", state
-
-    # Xác thực slot & doctor
-    slot = state.get("chosen_slot") or {}
-    doc_id = _extract_doctor_id_from_state(state)
-    creator_id = state.get("creator_id")  
-
-    if not doc_id or not slot:
-        return "Thiếu thông tin đặt lịch. Vui lòng bắt đầu lại với 'đặt lịch'.", state
-
-    payload = {
-        "patientInfo": {
-            "name": draft["name"],
-            "email": draft["email"],
-            "phoneNumber": draft["phone"],
-            "gender": draft["gender"],
-            "dateOfBirth": draft["dateOfBirth"],
-        },
-        "time": f"{slot['date']}T{slot['time']}",
-        "note": draft.get("symptom",""),
-        "doctorId": doc_id,
-        "creatorId": str(creator_id) if creator_id else None,
-    }
-
-    print(f"[appointment] booking payload: {payload}")
-
-    try:
-        resp = requests.post(APPOINTMENTS_API, json=payload, timeout=100)
-        resp.raise_for_status()
-        data = resp.json() if resp.headers.get("content-type","").startswith("application/json") else {}
-    except Exception as e:
-        print(f"[appointment] create appointment error: {e}")
-        return "Xin lỗi, tạo lịch khám thất bại. Bạn vui lòng thử lại sau.", state
-
-    # reset flow
-    state.pop("pending_slots", None)
-    state.pop("chosen_slot", None)
-    state.pop("patient_draft", None)
-    state["step"] = None
-
-    code = (data or {}).get("code") or (data or {}).get("id") or "—"
-    return f"Đã đặt lịch thành công. Hẹn gặp bạn tại phòng khám!", state
+    # fallback
+    state["patient_step"] = "name"
+    return "Anh/chị cho em xin **Họ tên** của bệnh nhân ạ.", state
