@@ -2,8 +2,8 @@
   {
     "userId": 1,
     "name": "Triệu Triệu Dương",
-    "email": "duong.trieu@example.com",
-    "phoneNumber": "0905123456",
+    "email": "trieuduong@gmail.com",
+    "phoneNumber": "0905123111",
     "role": null,
     "authStatus": null,
     "position": "Phó khoa Khám da",
@@ -20,14 +20,14 @@
     "role": null,
     "authStatus": null,
     "position": "Bác sĩ chuyên khoa",
-    "degree": "BS",
+    "degree": "CKI",
     "introduction": "Bác sĩ Nguyễn Bá My Nhi là một Bác sĩ Nội tận tâm và đầy nhiệt huyết của bệnh viện. Đang trong chương trình đào tạo chuyên sâu, bác sĩ Nhi tích cực tham gia vào công tác điều trị, nghiên cứu khoa học và luôn thể hiện tinh thần ham học hỏi.",
     "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2021/03/bs-nguyen-ba-my-nhi.png",
     "achievements": "Tác giả của 3 công trình nghiên cứu về liệu pháp laser trong điều trị sẹo mụn. Giảng viên thỉnh giảng tại Trường Đại học Y Hà Nội."
   },
   {
     "userId": 3,
-    "name": "Vũ Trường Khanh",
+    "name": "Vũ Trường Khánh",
     "email": "khanh.vutruong@example.com",
     "phoneNumber": "0905123458",
     "role": null,
@@ -72,7 +72,7 @@
     "role": null,
     "authStatus": null,
     "position": "Bác sĩ điều trị",
-    "degree": "BS",
+    "degree": "CKII",
     "introduction": "Bác sĩ Chuyên khoa I Trần Phan Chung Thuỳ là một bác sĩ điều trị tận tâm và giàu kinh nghiệm tại bệnh viện, trực tiếp chịu trách nhiệm trong việc chẩn đoán, điều trị và chăm sóc sức khỏe cho người bệnh.Sau khi tốt nghiệp bác sĩ đa khoa, bác sĩ Chung Thuỳ đã hoàn thành xuất sắc chương trình đào tạo Bác sĩ Chuyên khoa I. Đây là quá trình đào tạo sau đại học chuyên sâu, giúp bác sĩ nâng cao tay nghề và kiến thức lâm sàng một cách toàn diện để giải quyết các vấn đề y khoa phức tạp.",
     "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2011/01/bsi-tran-phan-chung-thuy.png",
     "achievements": "Tham gia chương trình hợp tác y tế Việt – Nhật về liệu pháp tế bào gốc trong tái tạo da. Giảng dạy tại nhiều khóa đào tạo chuyên sâu cho bác sĩ trẻ."
@@ -104,19 +104,6 @@
     "achievements": "Hơn 20 năm công tác trong lĩnh vực da liễu. Từng được Bộ Y tế trao tặng bằng khen vì đóng góp trong nghiên cứu điều trị viêm da cơ địa."
   },
   {
-    "userId": 9,
-    "name": "Ngô Quý Châu",
-    "email": "chau.ngoquy@example.com",
-    "phoneNumber": "0905123464",
-    "role": null,
-    "authStatus": null,
-    "position": "Bác sĩ điều trị",
-    "degree": "ThS",
-    "introduction": "Là một bác sĩ điều trị giàu kinh nghiệm tại Khoa Điều trị, Bác sĩ chuyên khoa II chuyên sâu về điều trị các bệnh nhân da liễu cần chăm sóc đặc biệt. Bác sĩ nổi bật với khả năng xử lý các ca bệnh phức tạp, luôn tận tình theo dõi và áp dụng những phương pháp điều trị sinh học tiên tiến nhất để cải thiện chất lượng sống cho người bệnh.",
-    "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2021/10/avt-bac-si-giao-su-ngo-quy-chau.png",
-    "achievements": "Thực hiện hơn 200 ca phẫu thuật thẩm mỹ da liễu. Từng là diễn giả tại Hội nghị Da liễu Đông Nam Á năm 2023."
-  },
-  {
     "userId": 10,
     "name": "Lê Thị Mai",
     "email": "mai.lethi@example.com",
@@ -128,5 +115,18 @@
     "introduction": "Phó Giáo sư, Tiến sĩ Lê Thị Mai là Trưởng khoa Điều trị tổng hợp, một trong những chuyên gia đầu ngành và là người thầy đáng kính trong lĩnh vực Da liễu tại Việt Nam.Với học vị Phó Giáo sư - Tiến sĩ, bác sĩ Lê Thị Mai không chỉ là một nhà lâm sàng xuất sắc mà còn là một nhà khoa học tâm huyết. Bác sĩ là tác giả của nhiều công trình nghiên cứu khoa học giá trị được đăng trên các tạp chí y khoa uy tín trong và ngoài nước, góp phần quan trọng vào sự phát quen của chuyên ngành. Bà cũng dành nhiều thời gian cho công tác giảng dạy, hướng dẫn các thế hệ bác sĩ, thạc sĩ và nghiên cứu sinh.",
     "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2021/10/avt-bac-si-giao-su-ngo-quy-chau.png",
     "achievements": "Tác giả nhiều bài báo khoa học về điều trị mụn trứng cá ở thanh thiếu niên. Được bệnh nhân đánh giá cao về thái độ tận tâm và chuyên nghiệp."
+  },
+  {
+    "userId": 11,
+    "name": "Phạm Thị Mỹ Hạnh",
+    "email": "volequyen11042005@gmail.com",
+    "phoneNumber": "0916513684",
+    "role": null,
+    "authStatus": null,
+    "position": "Bác sĩ điều trị",
+    "degree": "PGS",
+    "introduction": "Phó Giáo sư, Tiến sĩ Phạm Thị Mỹ Hạnh là Trưởng khoa Điều trị tổng hợp, một trong những chuyên gia đầu ngành và là người thầy đáng kính trong lĩnh vực Da liễu tại Việt Nam.Với học vị Phó Giáo sư - Tiến sĩ, bác sĩ Lê Thị Mai không chỉ là một nhà lâm sàng xuất sắc mà còn là một nhà khoa học tâm huyết. Bác sĩ là tác giả của nhiều công trình nghiên cứu khoa học giá trị được đăng trên các tạp chí y khoa uy tín trong và ngoài nước, góp phần quan trọng vào sự phát quen của chuyên ngành. Bà cũng dành nhiều thời gian cho công tác giảng dạy, hướng dẫn các thế hệ bác sĩ, thạc sĩ và nghiên cứu sinh.",
+    "avatarFilepath": "https://tamanhhospital.vn/wp-content/uploads/2021/10/avt-bac-si-giao-su-ngo-quy-chau.png",
+    "achievements": "Không có"
   }
 ]

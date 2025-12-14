@@ -303,6 +303,7 @@ def start_appointment_booking(
         if hour is not None:
             desired_minutes = hour * 60 + minute
 
+        MAX_SUGGESTIONS = 10 
         NEAR_THRESHOLD = 35 
 
         all_candidates: List[Dict[str, Any]] = []
@@ -499,8 +500,8 @@ def handle_patient_info(user_text: str, state: Dict[str, Any], APPOINTMENTS_API:
     # Bước 2: Số điện thoại
     if step == "phone":
         digits = re.sub(r"\D", "", text)
-        if len(digits) < 9:
-            return "Số điện thoại chưa đúng lắm, anh/chị nhập lại giúp em (ít nhất 9 chữ số) nhé.", state
+        if len(digits) != 10:
+            return "Số điện thoại chưa đúng lắm, anh/chị nhập lại giúp em (10 chữ số) nhé.", state
 
         info["phone"] = digits
         state["patient_info"] = info
